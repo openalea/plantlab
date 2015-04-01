@@ -28,7 +28,7 @@ from PyQGLViewer import QGLViewer, Vec, Quaternion
 import sys
 
 from openalea.oalab.service.geometry import to_shape3d
-from openalea.oalab.session.session import Session
+from openalea.oalab.world import World
 
 
 class view3D(QGLViewer):
@@ -103,6 +103,9 @@ class view3D(QGLViewer):
         for s in scenes:
             world_obj = scenes[s]
             if isinstance(world_obj, WorldObject):
+                if hasattr(world_obj, "transform"):
+                    obj = to_shape3d(world_obj.transform())
+
                 if world_obj.in_scene:
                     obj = to_shape3d(world_obj)
                 else:
@@ -236,8 +239,8 @@ class Viewer(AbstractListener, view3D):
         QtCore.QObject.connect(actionBlack, QtCore.SIGNAL('triggered(bool)'), self.set_bg_black)
         QtCore.QObject.connect(actionWhite, QtCore.SIGNAL('triggered(bool)'), self.set_bg_white)
 
-        session = Session()
-        session.world.register_listener(self)
+        world = World()
+        world.register_listener(self)
 
         self._actions = [["Viewer", "Zoom", actionResetZoom, 0],
                          ["Viewer", "Zoom", actionZoomOut, 0],
