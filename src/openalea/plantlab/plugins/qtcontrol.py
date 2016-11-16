@@ -1,4 +1,4 @@
-from openalea.core.plugin.control import ControlWidgetSelectorPlugin
+from openalea.oalab.plugin.oalab.control import ControlWidgetSelectorPlugin
 
 
 class PluginColorListWidget(ControlWidgetSelectorPlugin):

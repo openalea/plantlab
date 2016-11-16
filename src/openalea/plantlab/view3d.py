@@ -22,13 +22,13 @@ __revision__ = ""
 from openalea.vpltk.qt import QtGui, QtCore
 from openalea.plantgl.all import Scene, Sphere, Discretizer, GLRenderer, BoundingBox
 from openalea.core.observer import AbstractListener
-from openalea.oalab.gui import resources_rc
-from openalea.oalab.world.world import WorldObject
+from openalea.oalab.widget import resources_rc
+from openalea.core.world.world import WorldObject
 from PyQGLViewer import QGLViewer, Vec, Quaternion
 import sys
 
 from openalea.oalab.service.geometry import to_shape3d
-from openalea.oalab.world import World
+from openalea.core.world import World
 
 
 class view3D(QGLViewer):

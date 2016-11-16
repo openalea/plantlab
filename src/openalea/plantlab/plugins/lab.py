@@ -1,13 +1,16 @@
+from openalea.oalab.plugin.builtin.lab.default import DefaultLab
+from openalea.core.plugin import PluginDef
 
-from openalea.oalab.plugins.labs.default import DefaultLab
 
-
+@PluginDef
 class PlantLab(DefaultLab):
     name = 'plant'
     alias = 'Plant'
+    label = 'Plant'
     applets = DefaultLab.applets
     icon = 'icon_plantlab.png'
 
+    connections = []
     def __call__(self, mainwin=None):
         if mainwin is None:
             return self.__class__

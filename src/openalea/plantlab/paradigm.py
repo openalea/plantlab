@@ -20,7 +20,7 @@
 __revision__ = ""
 
 
-from openalea.oalab.gui.paradigm.python import PythonModelController
+from openalea.oalab.paradigm.python import PythonModelController
 from openalea.plantlab.lpy_data import LPyFile
 from openalea.oalab.session.session import Session
 from openalea.oalab.service.help import display_help

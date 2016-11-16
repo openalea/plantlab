@@ -1,11 +1,18 @@
+from openalea.core.plugin import PluginDef
+from openalea.core.authors import cpradal
 
-from openalea.oalab.plugins.applets import PluginApplet
+#from openalea.oalab.plugins.applets import PluginApplet
 
 
-class Viewer3D(PluginApplet):
+@PluginDef
+class Viewer3D(object):
+
     name = 'Viewer3D'
-    alias = 'Viewer'
+    label = 'Viewer'
     icon = 'icon_viewer.png'
+
+    authors = [cpradal]
+    tags = ['3d']
 
     def __call__(self):
         # Load and instantiate graphical component that actually provide feature
