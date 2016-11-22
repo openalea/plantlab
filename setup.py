@@ -136,7 +136,7 @@ setup(
         ],
 
         'oalab.lab': [
-            'PlantLab = openalea.plantlab.plugins:PlantLab',
+            'oalab.lab/plantlab = openalea.plantlab.plugins.lab',
         ],
 
 
