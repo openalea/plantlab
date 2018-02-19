@@ -22,13 +22,13 @@ __revision__ = ""
 from openalea.vpltk.qt import QtGui, QtCore
 from openalea.plantgl.all import Scene, Sphere, Discretizer, GLRenderer, BoundingBox
 from openalea.core.observer import AbstractListener
-from openalea.oalab.gui import resources_rc
-from openalea.oalab.world.world import WorldObject
+from openalea.oalab.widget import resources_rc
+from openalea.core.world.world import WorldObject
 from PyQGLViewer import QGLViewer, Vec, Quaternion
 import sys
 
 from openalea.oalab.service.geometry import to_shape3d
-from openalea.oalab.world import World
+from openalea.core.world import World
 
 
 class view3D(QGLViewer):
@@ -242,6 +242,10 @@ class Viewer(AbstractListener, view3D):
         world = World()
         world.register_listener(self)
 
+        self.object_repr = {}
+        self.object_scene = {}
+        self.property = {}
+
         self._actions = [["Viewer", "Zoom", actionResetZoom, 0],
                          ["Viewer", "Zoom", actionZoomOut, 0],
                          ["Viewer", "Zoom", actionZoomIn, 0],
@@ -260,9 +264,68 @@ class Viewer(AbstractListener, view3D):
 
     def notify(self, sender, event=None):
         signal, data = event
+        print "PGLViewer < ",signal
         if signal in ('WorldChanged', 'world_sync'):
             self.setScene(data)
             self.updateGL()
+        elif signal == 'world_object_changed':
+            world, old, new = data
+            self.set_world_object(new)
+        elif signal == 'world_object_item_changed':
+            world, obj, item, old, new = data
+            if item == 'attribute':
+                self.update_world_object(obj, new)
+
+    def set_world_object(self, world_object):
+        object_name = world_object.name
+        if hasattr(world_object, "transform"):
+            object_data = to_shape3d(world_object.transform())
+        else:
+            object_data = to_shape3d(world_object)
+        self.object_repr[object_name] = object_data
+        if isinstance(object_data,Scene):
+            self.add_scene(world_object, object_data, **world_object.kwargs)
+
+    def update_world_object(self, world_object, attribute):
+        object_name = world_object.name
+
+        if self.object_repr.has_key(object_name):
+            object_data = self.object_repr[object_name]
+            if isinstance(object_data,Scene):
+                if attribute['name'] == 'display_polydata':
+                    self.display_scene(name=world_object.name, disp=attribute['value'])
+
+    def display_scene(self, name, disp=True):
+        self.scene.clear()
+        self._display_scene(name, disp)
+        self.compute()
+
+    def _display_scene(self, name, disp=True):
+        self.property[name]['disp'] = disp
+
+    def compute(self):
+        self.scene.clear()
+        for object_name in self.object_scene.keys():
+            if self.property[object_name]['disp']:
+                self.scene += self.object_scene[object_name]
+        self.draw()
+        if self.autofocus:
+            self.update_radius()
+        self.updateGL()
+
+    def add_scene(self, world_object, object_scene, **kwargs):
+        world_object.silent = True
+
+        name = world_object.name
+
+        self.object_scene[name] = object_scene
+        self.property[name] = dict()
+        self.display_scene(name, disp=True)
+
+        world_object.silent = False
+
+        from openalea.core.interface import IBool
+        world_object.set_attribute(name='display_polydata',value=True, interface=IBool, alias=u"Display Polydata")
 
     def actions(self):
         return self._actions
